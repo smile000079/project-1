@@ -1,0 +1,33 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <regex>
+
+using namespace std;
+
+// Function to determine relay type (RELAY_NC or RELAY_NO)
+string determineRelayType(const string& relayName) {
+    return (relayName.find("NC") != string::npos) ? "RELAY_NC" : "RELAY_NO";
+}
+
+int main() {
+    ifstream inputFile("NETLIST.TXT");
+    if (!inputFile) {
+        cerr << "Error opening file!" << endl;
+        return 1;
+    }
+    string line;
+    regex relayPattern(R"(\bK[A-Z0-9_]+)");  // Match relays starting with 'K'
+    while (getline(inputFile, line)) {
+        istringstream iss(line);
+        string column1, column2, column3, column4;
+        if (iss >> column1 >> column2 >> column3 >> column4) {
+            if (regex_match(column2, relayPattern)) {
+                cout << determineRelayType(column2) << endl; // Output only RELAY_NC or RELAY_NO
+            }
+        }
+    }
+    inputFile.close();
+    return 0;
+}
