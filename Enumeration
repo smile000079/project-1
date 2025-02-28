@@ -1,0 +1,61 @@
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <regex>
+
+using namespace std;
+
+// Function to modify relay names based on conditions
+string modifyRelayName(const string& relayName) {
+    // Do not modify "K_AGND_SYSGND"
+    if (relayName == "K_AGND_SYSGND") {
+        return relayName;
+    }
+
+    // Match "K数字_数字" (如 K12_5, K6_10)
+    regex patternKNumNum(R"(K\d+_\d+)");
+    if (regex_match(relayName, patternKNumNum)) {
+        size_t pos = relayName.find('_');  // 找到第一个 "_"
+        if (pos != string::npos) {
+            return relayName.substr(0, pos) + "_CIB" + relayName.substr(pos);
+        }
+    }
+
+    // 对于其他以"K"开头的继电器（K数字+_TMU, K数字+_LOAD, 其他未匹配项） 在末尾加 "_CIB"
+    return relayName + "_CIB";
+}
+
+int main() {
+    ifstream inputFile("NETLIST.TXT");
+    if (!inputFile) {
+        cerr << "Error opening file!" << endl;
+        return 1;
+    }
+
+    string line;
+    regex relayPattern(R"(\bK[A-Z0-9_]+)");  // 只匹配以 'K' 开头的继电器
+    vector<string> modifiedRelays;
+
+    while (getline(inputFile, line)) {
+        istringstream iss(line);
+        string column1, column2, column3, column4;
+
+        if (iss >> column1 >> column2 >> column3 >> column4) {
+            if (regex_match(column2, relayPattern)) {
+                string modifiedName = modifyRelayName(column2);
+                modifiedRelays.push_back(modifiedName);
+            }
+        }
+    }
+
+    inputFile.close();
+
+    // 输出修改后的继电器名称
+    cout << "Modified Relay Names:" << endl;
+    for (const auto& relay : modifiedRelays) {
+        cout << relay << endl;
+    }
+
+    return 0;
+}
