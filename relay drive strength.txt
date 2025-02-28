@@ -1,0 +1,13 @@
+Coto 9901-05-20 --- 18.0mA
+
+Omron G3VM-101QR1 --- 10.5mA
+
+Omron G3VM-41QR10 --- 10.5mA
+
+Panasonic AQY225R3TY --- 10.5mA
+
+Pickering 120-1-A-5/1 --- 21.0mA
+
+Tyco 50935 --- 21.0mA
+
+ 
